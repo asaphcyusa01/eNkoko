@@ -1,3 +1,4 @@
+
 :root {
     --primary: #34AD54;
     --secondary: #FF9933;
@@ -97,7 +98,7 @@
 }
 
 .bg-hero {
-    background: url(../img/carousel-1.jpg) top right no-repeat;
+    background: url(../img/test.png) top right no-repeat;
     background-size: cover;
 }
 
@@ -109,45 +110,13 @@
     }
 }
 
-.bg-gutumiza {
-    background: linear-gradient(rgba(52, 173, 84, .2), rgba(52, 173, 84, .2)), url(../img/bg-product-1.jpg) bottom right no-repeat;
-    background-size: contain;
-}
-
-.bg-imiti {
-    background: linear-gradient(rgba(255, 153, 51, .2), rgba(255, 153, 51, .2)), url(../img/fruit.png) bottom right no-repeat;
-    background-size: contain;
-}
-
 .service-item {
     box-shadow: 0 0 45px #EDEDED;
     transition: .5s;
 }
 
 .about i,
-.service-item i {
-    background-image: linear-gradient(var(--primary), var(--secondary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    transition: .5s;
-}
 
-.service-item:hover {
-    color: var(--light);
-    background: var(--primary) !important;
-}
-
-.service-item:hover i {
-    background-image: linear-gradient(var(--light), var(--secondary));
-}
-
-.service-item:hover h4 {
-    transition: .5s;
-}
-
-.service-item:hover h4 {
-    color: var(--light);
-}
 
 .product-item {
     padding: 0 30px 30px 30px;
