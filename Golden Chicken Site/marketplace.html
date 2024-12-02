@@ -3,10 +3,10 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Isoko rusange - eNkoko</title>
+    <title>eNkoko</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-    <meta content="eNkoko Marketplace" name="keywords">
-    <meta content="Marketplace under development" name="description">
+    <meta content="enkoko Bootstrap Site" name="keywords">
+    <meta content="enkokoBootstrap Site" name="description">
 
     <!-- External Links -->
     <link href="img/favicon.ico" rel="icon">
@@ -14,12 +14,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&family=Roboto:wght@500;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.0/css/all.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="css/style.css" rel="stylesheet">
 </head>
 
 <body>
-    <!-- Navbar Start -->
     <div class="container-fluid px-5 d-none d-lg-block">
         <div class="row gx-5 py-3 align-items-center">
             <div class="col-lg-3">
@@ -67,18 +67,66 @@
         </div>
     </nav>
    
-    <!-- Navbar End -->
-
-    <!-- Banner Section Start -->
-    <div class="container-fluid py-5 bg-primary text-white text-center">
-        <h1 class="display-3">Marketplace Under Development</h1>
-        <p class="lead">We are currently building a secure marketplace that will require an account to log in.</p>
-        <p>Please check back later or contact us for updates.</p>
-        <a href="contact.html" class="btn btn-secondary mt-3">Contact Us</a>
+<!-- Header End -->
+    <!-- Header -->
+    <div class="container-fluid py-5" style="background-image: url('img/test.png'); background-size: cover; background-position: center;">
+        <div class="container text-center py-5">
+            <h1 class="display-3 text-white">Isoko Rusange</h1>
+        </div>
     </div>
-    <!-- Banner Section End -->
+    
 
-    <div class="container-fluid bg-footer bg-primary text-white mt-5">
+    <!-- Filters -->
+    <div class="container py-4">
+        <div class="d-flex justify-content-center">
+            <button class="btn btn-primary mx-2 filter-btn" data-category="all">Byose</button>
+            <button class="btn btn-primary mx-2 filter-btn" data-category="imishwi">Imishwi</button>
+            <button class="btn btn-primary mx-2 filter-btn" data-category="amagi">Amagi</button>
+            <button class="btn btn-primary mx-2 filter-btn" data-category="inyama">Inyama</button>
+        </div>
+    </div>
+
+    <!-- Product Grid -->
+    <div class="container py-5">
+        <div class="row g-4">
+            <div class="col-lg-4 col-md-6 product-item" data-category="imishwi">
+                <div class="bg-white p-4 text-center border">
+                    <img class="img-fluid mb-3" src="img/imishwi.png" alt="Imishwi Product">
+                    <h5 class="mb-2">Imishwi</h5>
+                    <p class="text-primary fw-bold">5,000 FRW</p>
+                    <div class="d-flex justify-content-center">
+                        <a class="btn bg-primary text-white mx-1" href="#"><i class="bi bi-cart"></i> Add to Cart</a>
+                        <a class="btn bg-secondary text-white mx-1" href="#"><i class="bi bi-eye"></i> Preview</a>
+                    </div>
+                </div>
+            </div>
+            <!-- Repeat similar structure for other products -->
+            <div class="col-lg-4 col-md-6 product-item" data-category="amagi">
+                <div class="bg-white p-4 text-center border">
+                    <img class="img-fluid mb-3" src="img/amagi.png" alt="Amagi Product">
+                    <h5 class="mb-2">Amagi</h5>
+                    <p class="text-primary fw-bold">3,000 FRW</p>
+                    <div class="d-flex justify-content-center">
+                        <a class="btn bg-primary text-white mx-1" href="#"><i class="bi bi-cart"></i> Add to Cart</a>
+                        <a class="btn bg-secondary text-white mx-1" href="#"><i class="bi bi-eye"></i> Preview</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-6 product-item" data-category="inyama">
+                <div class="bg-white p-4 text-center border">
+                    <img class="img-fluid mb-3" src="img/inyama.png" alt="Inyama Product">
+                    <h5 class="mb-2">Inyama</h5>
+                    <p class="text-primary fw-bold">10,000 FRW</p>
+                    <div class="d-flex justify-content-center">
+                        <a class="btn bg-primary text-white mx-1" href="#"><i class="bi bi-cart"></i> Add to Cart</a>
+                        <a class="btn bg-secondary text-white mx-1" href="#"><i class="bi bi-eye"></i> Preview</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+       <div class="container-fluid bg-footer bg-primary text-white mt-5">
         <div class="container">
             <div class="row gx-5">
                 <div class="col-lg-8 col-md-6">
@@ -141,9 +189,39 @@
 
 
 
+    <!-- Back to Top -->
+    <a href="index.html" class="btn btn-secondary py-3 fs-4 back-to-top"><i class="bi bi-arrow-up"></i></a>
+
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/counterup/counterup.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <script src="js/main.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterButtons = document.querySelectorAll('.filter-btn');
+            const productItems = document.querySelectorAll('.product-item');
+    
+            filterButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    const category = button.getAttribute('data-category');
+    
+                    productItems.forEach(item => {
+                        if (category === 'all' || item.getAttribute('data-category') === category) {
+                            item.style.display = 'block'; // Show matching items
+                        } else {
+                            item.style.display = 'none'; // Hide non-matching items
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+    
 </body>
 
 </html>
