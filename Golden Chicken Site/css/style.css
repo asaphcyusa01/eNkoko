@@ -1,4 +1,3 @@
-
 :root {
     --primary: #34AD54;
     --secondary: #FF9933;
@@ -118,11 +117,13 @@
 .about i,
 
 
-.product-item {
+.product-item,
+.marketplace-item {
     padding: 0 30px 30px 30px;
 }
 
-.product-item .btn-action {
+.product-item .btn-action,
+.marketplace-item .btn-action {
     position: absolute;
     width: 100%;
     bottom: -40px;
@@ -131,16 +132,19 @@
     transition: .5s;
 }
 
-.product-item:hover .btn-action {
+.product-item:hover .btn-action,
+.marketplace-item:hover .btn-action {
     bottom: 0;
     opacity: 1;
 }
 
-.product-item h5 {
+.product-item h5,
+.marketplace-item h5 {
     transition: .5s;
 }
 
-.product-item:hover h5 {
+.product-item:hover h5,
+.marketplace-item:hover h5 {
     opacity: 0;
 }
 
@@ -183,11 +187,13 @@
     color: var(--secondary);
 }
 
-.blog-item img {
+.blog-item img,
+.marketplace-item img {
     transition: .5s;
 }
 
-.blog-item:hover img {
+.blog-item:hover img,
+.marketplace-item:hover img {
     transform: scale(1.2);
 }
 
@@ -204,6 +210,15 @@
     justify-content: flex-end;
     background: linear-gradient(rgba(52, 173, 84, 0), rgba(52, 173, 84, 1));
     z-index: 1;
+}
+
+.marketplace-item {
+    box-shadow: 0 0 45px #EDEDED;
+    transition: .5s;
+}
+
+.marketplace-item:hover {
+    transform: translateY(-10px);
 }
 
 .bg-footer {

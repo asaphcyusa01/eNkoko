@@ -78,5 +78,19 @@
     });
 
     
-})(jQuery);
+    // Marketplace product grid functionality
+    $(document).ready(function () {
+        // Event listener for 'Add to Cart' buttons
+        $('.marketplace-item .btn-primary').click(function (e) {
+            e.preventDefault();
+            console.log('Add to Cart button clicked for:', $(this).closest('.marketplace-item').find('.card-title').text());
+        });
 
+        // Event listener for 'View Details' buttons
+        $('.marketplace-item .btn-secondary').click(function (e) {
+            e.preventDefault();
+            console.log('View Details button clicked for:', $(this).closest('.marketplace-item').find('.card-title').text());
+        });
+    });
+
+})(jQuery);
