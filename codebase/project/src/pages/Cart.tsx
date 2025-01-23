@@ -5,7 +5,9 @@ import { Link } from 'react-router-dom';
 import { formatCurrency } from '../utils/currency';
 
 export default function Cart() {
-  const { state, dispatch } = useCart();
+  const { state, dispatch, checkout } = useCart();
+  const [isProcessing, setIsProcessing] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
   const handleQuantityChange = (id: string, quantity: number) => {
     if (quantity < 1) return;
@@ -14,6 +16,18 @@ export default function Cart() {
 
   const handleRemoveItem = (id: string) => {
     dispatch({ type: 'REMOVE_ITEM', payload: id });
+  };
+
+  const handleCheckout = async () => {
+    try {
+      setIsProcessing(true);
+      setError(null);
+      await checkout();
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'An error occurred');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   if (state.items.length === 0) {
@@ -104,8 +118,19 @@ export default function Cart() {
                   <span>{formatCurrency(state.total)}</span>
                 </div>
               </div>
-              <button className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 transition duration-300">
-                Ishyura
+              {error && (
+                <div className="p-3 bg-red-100 text-red-700 rounded-lg text-sm">
+                  {error}
+                </div>
+              )}
+              <button
+                onClick={handleCheckout}
+                disabled={isProcessing}
+                className={`w-full bg-orange-600 text-white py-3 rounded-lg transition duration-300 ${
+                  isProcessing ? 'opacity-50 cursor-not-allowed' : 'hover:bg-orange-700'
+                }`}
+              >
+                {isProcessing ? 'Tegereza gato...' : 'Ishyura'}
               </button>
             </div>
           </div>

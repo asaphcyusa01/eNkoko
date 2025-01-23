@@ -10,6 +10,10 @@ import Marketplace from './pages/Marketplace';
 import Cart from './pages/Cart';
 import Hatchery from './pages/Hatchery';
 import Contact from './pages/Contact';
+import AdminDashboard from './pages/Admin/Dashboard';
+import AdminCourses from './pages/Admin/Courses';
+import AdminOrders from './pages/Admin/Orders';
+import AdminRoute from './components/AdminRoute';
 
 export default function App() {
   return (
@@ -26,6 +30,9 @@ export default function App() {
               <Route path="/cart" element={<Cart />} />
               <Route path="/hatchery" element={<Hatchery />} />
               <Route path="/contact" element={<Contact />} />
+              <Route path="/admin" element={<AdminRoute><AdminDashboard /></AdminRoute>} />
+              <Route path="/admin/courses" element={<AdminRoute><AdminCourses /></AdminRoute>} />
+              <Route path="/admin/orders" element={<AdminRoute><AdminOrders /></AdminRoute>} />
             </Routes>
           </main>
           <Footer />

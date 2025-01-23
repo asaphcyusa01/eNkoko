@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useReducer } from 'react';
 import { Product } from '../types';
+import { supabase } from '../lib/supabase';
 
 interface CartItem extends Product {
   quantity: number;
@@ -13,11 +14,13 @@ interface CartState {
 type CartAction =
   | { type: 'ADD_ITEM'; payload: Product }
   | { type: 'REMOVE_ITEM'; payload: string }
-  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } };
+  | { type: 'UPDATE_QUANTITY'; payload: { id: string; quantity: number } }
+  | { type: 'CLEAR_CART' };
 
 const CartContext = createContext<{
   state: CartState;
   dispatch: React.Dispatch<CartAction>;
+  checkout: () => Promise<void>;
 } | null>(null);
 
 function cartReducer(state: CartState, action: CartAction): CartState {
@@ -64,6 +67,8 @@ function cartReducer(state: CartState, action: CartAction): CartState {
         total: state.total + (item.price * quantityDiff)
       };
     }
+    case 'CLEAR_CART':
+      return { items: [], total: 0 };
     default:
       return state;
   }
@@ -72,8 +77,52 @@ function cartReducer(state: CartState, action: CartAction): CartState {
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [state, dispatch] = useReducer(cartReducer, { items: [], total: 0 });
 
+  const checkout = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Please sign in to checkout');
+
+      // Create order
+      const { data: order, error: orderError } = await supabase
+        .from('orders')
+        .insert({
+          customer_name: user.user_metadata.full_name || 'Anonymous',
+          customer_phone: user.user_metadata.phone || '',
+          total: state.total,
+          status: 'pending',
+          category: state.items[0]?.category === 'chick' ? 'hatchery' : 'marketplace',
+          order_date: new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (orderError) throw orderError;
+
+      // Create order items
+      const orderItems = state.items.map(item => ({
+        order_id: order.id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.price,
+        category: item.category === 'chick' ? 'chick' : 'product'
+      }));
+
+      const { error: itemsError } = await supabase
+        .from('order_items')
+        .insert(orderItems);
+
+      if (itemsError) throw itemsError;
+
+      // Clear cart after successful checkout
+      dispatch({ type: 'CLEAR_CART' });
+    } catch (error) {
+      console.error('Checkout error:', error);
+      throw error;
+    }
+  };
+
   return (
-    <CartContext.Provider value={{ state, dispatch }}>
+    <CartContext.Provider value={{ state, dispatch, checkout }}>
       {children}
     </CartContext.Provider>
   );
