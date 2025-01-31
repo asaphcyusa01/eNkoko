@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { Play, Clock, Award, Star, Check, ChevronRight, AlertCircle, CheckCircle2, RefreshCcw } from 'lucide-react';
 import CourseProgress from '../components/CourseProgress';
 import CourseModule from '../components/CourseModule';
-import CourseInstructor from '../components/CourseInstructor';
+import ModuleContent from '../components/ModuleContent';
 import { useModules } from '../hooks/useModules';
 import { useProgress } from '../hooks/useProgress';
 import { useCourses } from '../hooks/useCourses';
@@ -57,14 +57,16 @@ export default function CourseDetail() {
   const { modules, loading: modulesLoading } = useModules(courseId || '');
   const { progress, markAsCompleted } = useProgress();
   
-  const [showQuiz, setShowQuiz] = React.useState(false);
-  const [currentQuestion, setCurrentQuestion] = React.useState(0);
-  const [selectedAnswer, setSelectedAnswer] = React.useState<number | null>(null);
-  const [isCorrect, setIsCorrect] = React.useState<boolean | null>(null);
-  const [quizCompleted, setQuizCompleted] = React.useState(false);
-  const [score, setScore] = React.useState(0);
+  const [selectedModuleId, setSelectedModuleId] = useState<string | null>(null);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
+  const [quizCompleted, setQuizCompleted] = useState(false);
+  const [score, setScore] = useState(0);
 
   const course = courses.find(c => c.id === courseId);
+  const selectedModule = modules.find(m => m.id === selectedModuleId);
 
   if (coursesLoading || modulesLoading) {
     return (
@@ -87,6 +89,11 @@ export default function CourseDetail() {
       </div>
     );
   }
+
+  const handleModuleClick = (moduleId: string) => {
+    setSelectedModuleId(moduleId);
+    setShowQuiz(false);
+  };
 
   const handleAnswerSelect = (answerIndex: number) => {
     setSelectedAnswer(answerIndex);
@@ -154,8 +161,107 @@ export default function CourseDetail() {
               </div>
             </div>
 
+            {/* Module Content or Quiz */}
+            {selectedModule ? (
+              <ModuleContent module={selectedModule} />
+            ) : showQuiz ? (
+              <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+                <h2 className="text-xl font-bold mb-4">Isuzuma Bumenyi</h2>
+                {quizCompleted ? (
+                  <div className="text-center">
+                    <h3 className="text-xl font-bold mb-4">
+                      Warangije Isuzuma!
+                    </h3>
+                    <p className="text-lg mb-4">
+                      Amanota yawe: {score}/{quizQuestions.length}
+                    </p>
+                    <button
+                      onClick={restartQuiz}
+                      className="flex items-center justify-center gap-2 mx-auto px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition duration-300"
+                    >
+                      <RefreshCcw className="h-5 w-5" />
+                      Subiramo Isuzuma
+                    </button>
+                  </div>
+                ) : (
+                  <div>
+                    <div className="mb-6">
+                      <h3 className="text-lg font-semibold mb-4">
+                        Ikibazo {currentQuestion + 1} kuri {quizQuestions.length}
+                      </h3>
+                      <p className="text-gray-800 mb-4">
+                        {quizQuestions[currentQuestion].question}
+                      </p>
+                      <div className="space-y-3">
+                        {quizQuestions[currentQuestion].options.map((option, index) => (
+                          <button
+                            key={index}
+                            onClick={() => handleAnswerSelect(index)}
+                            className={`w-full text-left p-4 rounded-lg border transition-all duration-200 ${
+                              selectedAnswer === index
+                                ? isCorrect === null
+                                  ? 'border-orange-500 bg-orange-50'
+                                  : isCorrect
+                                  ? 'border-green-500 bg-green-50'
+                                  : 'border-red-500 bg-red-50'
+                                : 'border-gray-200 hover:border-orange-500 hover:bg-orange-50'
+                            }`}
+                            disabled={isCorrect !== null}
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                    {isCorrect !== null && (
+                      <div className={`p-4 rounded-lg mb-4 ${
+                        isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                      }`}>
+                        <div className="flex items-center gap-2">
+                          {isCorrect ? (
+                            <CheckCircle2 className="h-5 w-5" />
+                          ) : (
+                            <AlertCircle className="h-5 w-5" />
+                          )}
+                          <p className="font-medium">
+                            {isCorrect ? 'Ni byiza! Igisubizo ni cyo!' : 'Igisubizo si cyo. Gerageza nanone!'}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                    <button
+                      onClick={handleAnswerSubmit}
+                      disabled={selectedAnswer === null || isCorrect !== null}
+                      className={`w-full py-3 rounded-lg text-white transition duration-300 ${
+                        selectedAnswer === null || isCorrect !== null
+                          ? 'bg-gray-400 cursor-not-allowed'
+                          : 'bg-orange-600 hover:bg-orange-700'
+                      }`}
+                    >
+                      Komeza
+                    </button>
+                  </div>
+                )}
+              </div>
+            ) : (
+              <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+                <h2 className="text-xl font-bold mb-4">Hitamo Inyigisho</h2>
+                <p className="text-gray-600 mb-4">
+                  Hitamo inyigisho imwe mu rutonde rw'inyigisho kugira ngo utangire kwiga.
+                </p>
+              </div>
+            )}
+          </div>
+
+          {/* Sidebar */}
+          <div className="space-y-6">
+            <CourseProgress
+              totalModules={modules.length}
+              completedModules={modules.filter(m => progress?.completed).length}
+            />
+
             {/* Modules List */}
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div className="bg-white rounded-lg shadow-lg p-6">
               <h2 className="text-xl font-bold mb-4">Inyigisho</h2>
               <div className="space-y-4">
                 {modules.map((module) => (
@@ -169,106 +275,11 @@ export default function CourseDetail() {
                       completed: progress?.completed || false,
                       locked: false
                     }}
-                    onModuleClick={() => {}}
+                    onModuleClick={handleModuleClick}
                   />
                 ))}
               </div>
             </div>
-
-            {/* Quiz Section */}
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
-              <h2 className="text-xl font-bold mb-4">Isuzuma Bumenyi</h2>
-              {!showQuiz ? (
-                <button
-                  onClick={() => setShowQuiz(true)}
-                  className="w-full bg-orange-600 text-white py-3 rounded-lg hover:bg-orange-700 transition duration-300"
-                >
-                  Tangira Isuzuma
-                </button>
-              ) : quizCompleted ? (
-                <div className="text-center">
-                  <h3 className="text-xl font-bold mb-4">
-                    Warangije Isuzuma!
-                  </h3>
-                  <p className="text-lg mb-4">
-                    Amanota yawe: {score}/{quizQuestions.length}
-                  </p>
-                  <button
-                    onClick={restartQuiz}
-                    className="flex items-center justify-center gap-2 mx-auto px-6 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition duration-300"
-                  >
-                    <RefreshCcw className="h-5 w-5" />
-                    Subiramo Isuzuma
-                  </button>
-                </div>
-              ) : (
-                <div>
-                  <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-4">
-                      Ikibazo {currentQuestion + 1} kuri {quizQuestions.length}
-                    </h3>
-                    <p className="text-gray-800 mb-4">
-                      {quizQuestions[currentQuestion].question}
-                    </p>
-                    <div className="space-y-3">
-                      {quizQuestions[currentQuestion].options.map((option, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleAnswerSelect(index)}
-                          className={`w-full text-left p-4 rounded-lg border transition-all duration-200 ${
-                            selectedAnswer === index
-                              ? isCorrect === null
-                                ? 'border-orange-500 bg-orange-50'
-                                : isCorrect
-                                ? 'border-green-500 bg-green-50'
-                                : 'border-red-500 bg-red-50'
-                              : 'border-gray-200 hover:border-orange-500 hover:bg-orange-50'
-                          }`}
-                          disabled={isCorrect !== null}
-                        >
-                          {option}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  {isCorrect !== null && (
-                    <div className={`p-4 rounded-lg mb-4 ${
-                      isCorrect ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                    }`}>
-                      <div className="flex items-center gap-2">
-                        {isCorrect ? (
-                          <CheckCircle2 className="h-5 w-5" />
-                        ) : (
-                          <AlertCircle className="h-5 w-5" />
-                        )}
-                        <p className="font-medium">
-                          {isCorrect ? 'Ni byiza! Igisubizo ni cyo!' : 'Igisubizo si cyo. Gerageza nanone!'}
-                        </p>
-                      </div>
-                    </div>
-                  )}
-                  <button
-                    onClick={handleAnswerSubmit}
-                    disabled={selectedAnswer === null || isCorrect !== null}
-                    className={`w-full py-3 rounded-lg text-white transition duration-300 ${
-                      selectedAnswer === null || isCorrect !== null
-                        ? 'bg-gray-400 cursor-not-allowed'
-                        : 'bg-orange-600 hover:bg-orange-700'
-                    }`}
-                  >
-                    Komeza
-                  </button>
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* Sidebar */}
-          <div className="space-y-6">
-            <CourseProgress
-              totalModules={modules.length}
-              completedModules={modules.filter(m => progress?.completed).length}
-            />
           </div>
         </div>
       </div>

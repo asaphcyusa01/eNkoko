@@ -20,14 +20,17 @@ export function useAdmin() {
 
   async function checkAdminStatus() {
     try {
+      setLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
+      
       if (!user) {
         setIsAdmin(false);
         navigate('/');
         return;
       }
 
-      const isUserAdmin = user.app_metadata.role === 'admin';
+      // Check for admin role in user metadata
+      const isUserAdmin = user.user_metadata?.role === 'admin';
       setIsAdmin(isUserAdmin);
       
       if (!isUserAdmin) {

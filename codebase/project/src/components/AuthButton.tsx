@@ -1,31 +1,45 @@
 import React from 'react';
-import { signInWithPopup, signOut } from 'firebase/auth';
-import { auth, googleProvider } from '../config/firebase';
+import { useNavigate } from 'react-router-dom';
+import { supabase } from '../lib/supabase';
 import { LogIn, LogOut } from 'lucide-react';
 
 export default function AuthButton() {
-  const [user, setUser] = React.useState(auth.currentUser);
+  const navigate = useNavigate();
+  const [user, setUser] = React.useState<any>(null);
+  const [loading, setLoading] = React.useState(false);
 
   React.useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      setUser(user);
+    // Get initial session
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null);
+      if (session?.user?.user_metadata?.role === 'admin') {
+        navigate('/admin');
+      }
     });
-    return () => unsubscribe();
-  }, []);
 
-  const handleSignIn = async () => {
-    try {
-      await signInWithPopup(auth, googleProvider);
-    } catch (error) {
-      console.error('Error signing in:', error);
-    }
-  };
+    // Listen for auth changes
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_, session) => {
+      setUser(session?.user ?? null);
+      if (session?.user?.user_metadata?.role === 'admin') {
+        navigate('/admin');
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [navigate]);
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
+      setLoading(true);
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      navigate('/');
     } catch (error) {
       console.error('Error signing out:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -34,18 +48,24 @@ export default function AuthButton() {
       {user ? (
         <button
           onClick={handleSignOut}
-          className="flex items-center gap-2 px-4 py-2 text-white bg-secondary-600 rounded-lg hover:bg-secondary-700 transition duration-300"
+          disabled={loading}
+          className={`flex items-center gap-2 px-4 py-2 text-white bg-secondary-600 rounded-lg transition duration-300 ${
+            loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-secondary-700'
+          }`}
         >
           <LogOut className="h-5 w-5" />
-          Sohoka
+          {loading ? 'Tegereza...' : 'Sohoka'}
         </button>
       ) : (
         <button
-          onClick={handleSignIn}
-          className="flex items-center gap-2 px-4 py-2 text-white bg-secondary-600 rounded-lg hover:bg-secondary-700 transition duration-300"
+          onClick={() => navigate('/auth')}
+          disabled={loading}
+          className={`flex items-center gap-2 px-4 py-2 text-white bg-secondary-600 rounded-lg transition duration-300 ${
+            loading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-secondary-700'
+          }`}
         >
           <LogIn className="h-5 w-5" />
-          Injira na Google
+          {loading ? 'Tegereza...' : 'Injira'}
         </button>
       )}
     </div>
